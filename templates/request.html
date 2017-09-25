@@ -90,6 +90,14 @@
             oTable = $("#table").DataTable({
                 "processing": true,
                 "serverSide": false,
+                "ajax": {
+                    "url": "./api/all_requests",
+                    "dataSrc": function ( json ) {
+                      console.log("HELLO");
+                      console.log(json.requests);
+                      return json.requests;
+                    }
+                },
                 // "ajax": "./api/requests.php/requests/datatable",
                 "columnDefs": [
                     {
@@ -103,10 +111,19 @@
                         "searchable": false
                     },
                     {
-                        "targets": [8],
+                        "targets": [6],
                         "visible": false
                     }
-                ]
+                ],
+                "columns": [
+                    { "data": "id" },
+                    { "data": "title" },
+                    { "data": "description" },
+                    { "data": "client_id" },
+                    { "data": "priority" },
+                    { "data": "target_date" },
+                    { "data": "product_id" }
+                  ]
             });
 
         });
@@ -119,6 +136,16 @@
 <div class="container-fluid">
     <div class="text-center col-md-4 col-md-offset-4">
         <h1>Feature Request</h1>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
 
         <form action="api/request/" method="post" role="form">
             {{ form.hidden_tag() }}
@@ -167,18 +194,13 @@
             </div>
             <div class="row">
                 <div class="form-group">
-                    <label for="url">Ticket URL</label>
-                    <input type="text" name="url" class="form-control"/>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group">
                     <label for="nama">Product Area</label>
                     <select name="product"
                             data-bind="options: products, optionsText:'text', optionsValue:'value'"
                             class="form-control">
                 </div>
             </div>
+            <br/><br/>
             <div class="row">
                 <div class="form-group">
                     <div class="">
@@ -203,12 +225,11 @@
                 <th>Title</th>
                 <th>Desc</th>
                 <th>client_id</th>
-                <th>Client</th>
+                <!-- <th>Client</th> -->
                 <th>Priority</th>
                 <th>Target Date</th>
-                <th>Ticket URL</th>
                 <th>product_id</th>
-                <th>Product</th>
+                <!-- <th>Product</th> -->
             </tr>
             </thead>
         </table>

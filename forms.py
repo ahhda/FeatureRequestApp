@@ -8,5 +8,4 @@ class RequestForm(Form):
     client_id = IntegerField('client_id', validators=[validators.required()])
     priority = IntegerField('priority', validators=[validators.required()])
     target_date = DateField('target_date', validators=[validators.required()])
-    url = TextField('url')
     product_id = IntegerField('product_id', validators=[validators.required()])
