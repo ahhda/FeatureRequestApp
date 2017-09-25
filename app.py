@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, abort, request
 from flask import render_template, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from forms import RequestForm
 from datetime import datetime
 
@@ -9,42 +10,6 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 import models
-
-
-#This should come from db
-clients = [
-    {
-        'id': 1,
-        'name': u'Client1',
-    },
-    {
-        'id': 2,
-        'name': u'Client2',
-    },
-    {
-        'id': 5,
-        'name': u'Client5',
-    }
-]
-
-products = [
-    {
-        'id': 1,
-        'name': u'Policies',
-    },
-    {
-        'id': 2,
-        'name': u'Billing',
-    },
-    {
-        'id': 3,
-        'name': u'Claims',
-    },
-    {
-        'id': 5,
-        'name': u'Reports',
-    }
-]
 
 #Get priorities according to client
 priorities = [
@@ -84,10 +49,18 @@ def get_products():
 
 @app.route('/api/priorities/<int:pr_id>', methods=['GET'])
 def get_priorities(pr_id):
-    priority = [priority for priority in priorities if priority['id'] == pr_id]
-    if not priority:
-        return jsonify({})
-    return jsonify({'priorities': priority[0]})
+    old_requests = models.ClientRequest.query.filter_by(client_id=pr_id).order_by(desc(models.ClientRequest.priority))
+    if not old_requests.first():
+        return jsonify({'priorities': [{'id':1,'name':1}]})
+    max_priority = old_requests.first().priority
+    priorities = []
+    for i in range(1, max_priority+2):
+        priority = {'id':i, 'name':i}
+        priorities.append(priority)
+    # priority = [priority for priority in priorities if priority['id'] == pr_id]
+    # if not priority:
+    #     return jsonify({})
+    return jsonify({'priorities': priorities})
 
 @app.route('/api/all_requests/', methods=['GET'])
 def get_requests():
@@ -100,6 +73,12 @@ def create_request():
     # if not request.json:
     #     abort(400)
     formData = request.form
+    old_requests = db.session.query(models.ClientRequest).filter(models.ClientRequest.client_id==formData['client'],
+        models.ClientRequest.priority>=int(formData['priority']))
+    for old_request in old_requests:
+        print old_request.as_dict()
+        old_request.priority += 1
+    db.session.commit()
     form = models.ClientRequest(description=formData['description'], title=formData['title'], 
         client_id=int(formData['client']), priority=int(formData['priority']), 
         target_date=datetime.strptime(formData['date'],'%Y-%m-%d'),
@@ -111,6 +90,7 @@ def create_request():
     print "TRUE"
     db.session.add(form)
     db.session.commit()
+    db.session.close()
     flash(u'Request item was successfully created')
     print "Request added"
     return redirect(url_for('hello_world'))

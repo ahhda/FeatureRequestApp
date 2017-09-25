@@ -54,6 +54,7 @@
                     console.log(selected);
                     var apiUrl = "./api/priorities/" + selected;
                     $.getJSON(apiUrl, function (data) {
+                        data = data.priorities
                         var mappedTasks = $.map(data, function (item) {
                             return new Option(item)
                         });
@@ -94,8 +95,12 @@
                     "url": "./api/all_requests",
                     "dataSrc": function ( json ) {
                       console.log("HELLO");
-                      console.log(json.requests);
-                      return json.requests;
+                      data = json.requests;
+                      console.log(data);
+                      for(i in data){
+                        data[i].target_date = new Date(data[i].target_date).toDateString();
+                      }
+                      return data;
                     }
                 },
                 // "ajax": "./api/requests.php/requests/datatable",
