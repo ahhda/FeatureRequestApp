@@ -1,12 +1,5 @@
 from app import db
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-
-    def __repr__(self):
-        return '<User %r>' % (self.title)
+from sqlalchemy.orm import relationship
 
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -41,10 +34,12 @@ class ClientRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     description = db.Column(db.Text)
-    client_id = db.Column(db.Integer)
+    client_id = db.Column(db.Integer, db.ForeignKey('client.id'))
     priority = db.Column(db.Integer)
     target_date = db.Column(db.DateTime)
-    product_id = db.Column(db.Integer)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    client = relationship(Client, foreign_keys='ClientRequest.client_id')
+    product = relationship(Product, foreign_keys='ClientRequest.product_id')
 
     def __init__(self, title, description, client_id, priority,target_date,product_id):
         self.title = title
@@ -58,4 +53,7 @@ class ClientRequest(db.Model):
         return '<Request title %r>' % (self.title)
 
     def as_dict(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+       dictObject = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+       dictObject['product'] = self.product.as_dict()
+       dictObject['client'] = self.client.as_dict()
+       return dictObject

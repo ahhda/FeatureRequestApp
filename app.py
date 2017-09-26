@@ -11,25 +11,10 @@ db = SQLAlchemy(app)
 
 import models
 
-#Get priorities according to client
-priorities = [
-    {
-        'id': 1,
-        'name': u'prior1',
-    },
-    {
-        'id': 2,
-        'name': u'prior2',
-    }
-]
-
 @app.route('/')
-def hello_world():
-    user = {'nickname': 'Miguel'}  # fake user
-    form = RequestForm()
+def index():
     return render_template('request.html',
-                           title='Home',
-                           form=form)
+                           title='Home')
 
 @app.route('/hello/')
 def hello():
@@ -57,9 +42,6 @@ def get_priorities(pr_id):
     for i in range(1, max_priority+2):
         priority = {'id':i, 'name':i}
         priorities.append(priority)
-    # priority = [priority for priority in priorities if priority['id'] == pr_id]
-    # if not priority:
-    #     return jsonify({})
     return jsonify({'priorities': priorities})
 
 @app.route('/api/all_requests/', methods=['GET'])
@@ -70,30 +52,21 @@ def get_requests():
 
 @app.route('/api/request/', methods=['POST'])
 def create_request():
-    # if not request.json:
-    #     abort(400)
     formData = request.form
     old_requests = db.session.query(models.ClientRequest).filter(models.ClientRequest.client_id==formData['client'],
         models.ClientRequest.priority>=int(formData['priority']))
     for old_request in old_requests:
         print old_request.as_dict()
         old_request.priority += 1
-    db.session.commit()
     form = models.ClientRequest(description=formData['description'], title=formData['title'], 
         client_id=int(formData['client']), priority=int(formData['priority']), 
         target_date=datetime.strptime(formData['date'],'%Y-%m-%d'),
         product_id=int(formData['product']))
-    # if form.validate() == False:
-    #     print "FALSE"
-    #     print form.errors
-    # else:
-    print "TRUE"
     db.session.add(form)
     db.session.commit()
-    db.session.close()
     flash(u'Request item was successfully created')
     print "Request added"
-    return redirect(url_for('hello_world'))
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -84,8 +84,10 @@
 
 
         $(document).ready(function () {
+            var dateNow = new Date();
             $('#datepicker').datetimepicker({
-                format: 'YYYY-MM-DD'
+                format: 'YYYY-MM-DD',
+                defaultDate:dateNow
             });
 
             oTable = $("#table").DataTable({
@@ -127,7 +129,9 @@
                     { "data": "client_id" },
                     { "data": "priority" },
                     { "data": "target_date" },
-                    { "data": "product_id" }
+                    { "data": "product_id" },
+                    { "data": "client.name" },
+                    { "data": "product.name" }
                   ]
             });
 
@@ -153,7 +157,6 @@
         {% endwith %}
 
         <form action="api/request/" method="post" role="form">
-            {{ form.hidden_tag() }}
             <input type="hidden" name="action" value="addNewFeatureRequest"/>
 
             <div class="row">
@@ -230,11 +233,11 @@
                 <th>Title</th>
                 <th>Desc</th>
                 <th>client_id</th>
-                <!-- <th>Client</th> -->
                 <th>Priority</th>
                 <th>Target Date</th>
                 <th>product_id</th>
-                <!-- <th>Product</th> -->
+                <th>Client</th>
+                <th>Product</th>
             </tr>
             </thead>
         </table>
