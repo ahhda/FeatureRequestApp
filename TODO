@@ -3,8 +3,6 @@ XX get clients from db
 XX get products from db
 XX get priorities from db
 XX update code for client priorty
-Create foreign key references for ClientRequest
-Correct datatable for clients, products
-Create request check data
-create test suites
-Change id's to random
+XX Create foreign key references for ClientRequest
+XX Correct datatable for clients, products
+XX create test suites

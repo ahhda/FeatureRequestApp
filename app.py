@@ -53,11 +53,12 @@ def get_requests():
 @app.route('/api/request/', methods=['POST'])
 def create_request():
     formData = request.form
+    print "ok"
     old_requests = db.session.query(models.ClientRequest).filter(models.ClientRequest.client_id==formData['client'],
         models.ClientRequest.priority>=int(formData['priority']))
     for old_request in old_requests:
-        print old_request.as_dict()
         old_request.priority += 1
+    print "No ok"
     form = models.ClientRequest(description=formData['description'], title=formData['title'], 
         client_id=int(formData['client']), priority=int(formData['priority']), 
         target_date=datetime.strptime(formData['date'],'%Y-%m-%d'),
