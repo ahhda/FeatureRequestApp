@@ -14,7 +14,12 @@ import models
 @app.route('/')
 def index():
     return render_template('request.html',
-                           title='Home')
+                           title='home')
+
+@app.route('/view/')
+def view():
+    return render_template('request.html',
+                           title='view')
 
 @app.route('/hello/')
 def hello():
