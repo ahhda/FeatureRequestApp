@@ -1,0 +1,20 @@
+from app import db
+from models import Client, Product
+
+db.create_all()
+clienta = Client("Client A", "a@britecore.com")
+clientb = Client("Client B", "b@britecore.com")
+clientc = Client("Client C", "c@britecore.com")
+db.session.add(clienta)
+db.session.add(clientb)
+db.session.add(clientc)
+db.session.commit()
+producta = Product("Billing")
+productb = Product("Policies")
+productc = Product("Claims")
+productd = Product("Reports")
+db.session.add(producta)
+db.session.add(productb)
+db.session.add(productc)
+db.session.add(productd)
+db.session.commit()

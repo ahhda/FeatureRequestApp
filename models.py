@@ -53,7 +53,9 @@ class ClientRequest(db.Model):
         return '<Request title %r>' % (self.title)
 
     def as_dict(self):
-       dictObject = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-       dictObject['product'] = self.product.as_dict()
-       dictObject['client'] = self.client.as_dict()
-       return dictObject
+        dictObject = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        if self.product:
+            dictObject['product'] = self.product.as_dict()
+        if self.client:
+            dictObject['client'] = self.client.as_dict()
+        return dictObject
